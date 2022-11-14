@@ -1,49 +1,34 @@
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-// Add imports above this line
-import { galleryItems } from './gallery-items';
-// Change code below this line
 
-const galleryPhotoContainer = document.querySelector('.gallery');
+import { galleryItems } from './gallery-items.js';
 
-createGallery(galleryItems, galleryPhotoContainer);
+const galleryContainerEl = document.querySelector('.gallery');
+const galleryMarkup = createGalleryMarkup(galleryItems);
 
-const lightbox = new SimpleLightbox('.gallery a', {
-  captions: true,
-  captionType: 'attr',
-  captionsData: 'alt',
-  captionPosition: 'bottom',
-  captionDelay: 250,
-  docClose: true,
-});
+galleryContainerEl.insertAdjacentHTML('beforeend', galleryMarkup);
 
-function createGallery(galleryItemsArray, galleryContainer) {
-  const galleryMarkupString = getMarkupString(galleryItemsArray);
-
-  createGalleryEl(galleryMarkupString, galleryContainer);
-
-  galleryContainer.addEventListener('click', zoomPicture);
-}
-
-function getMarkupString(galleryItemsArray) {
-  const MarkupString = galleryItemsArray
-    .map(
-      ({ preview, original, description }) =>
-        `<a class="gallery__link gallery__item" href="${original}">
-          <img class="gallery__image" src="${preview}" alt="${description}" />
-      </a>`
-    )
+function createGalleryMarkup(galleryItems) {
+  return galleryItems
+    .map(({ preview, original, description }) => {
+      return `
+     <a class="gallery__item" href="${original}">
+      <img class="gallery__image" src="${preview}" alt="${description}" />
+    </a>
+    `;
+    })
     .join('');
-  return MarkupString;
 }
 
-function createGalleryEl(markupString, galleryContainer) {
-  galleryContainer.innerHTML = markupString;
-}
+galleryContainerEl.addEventListener('click', openModal);
 
-function zoomPicture(event) {
-  if (event.target.nodeName !== 'IMG') {
-    return;
-  }
+function openModal(event) {
   event.preventDefault();
 }
+
+// Инициализация библиотеки
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionPosition: 'bottom',
+  captionDelay: 100,
+});
